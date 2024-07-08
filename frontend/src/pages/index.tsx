@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
+import { getSongs, saveSong } from "@/services/songs";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -44,9 +45,30 @@ export default function Home() {
         />
       </div>
 
-      <button onClick={()=>{
-        console.log("Prueba");
-      }}>Prueba</button>
+      <div className="flex">
+        <button disabled onClick={()=>{
+          saveSong( {
+            title: "The Godfather",
+            length: 10500,
+            year: 1972,
+            director: "Francis Ford Coppola",
+            actors: [
+              { name: "Marlon Brando" },
+              { name: "Al Pacino" },
+              { name: "James Caan" },
+              { name: "Richard S. Castellano" },
+              { name: "Robert Duvall" },
+              { name: "Sterling Hayden" }
+            ]
+          })
+        }}>Agrega canción</button>
+
+        <button onClick={()=>{
+          getSongs().then(res => console.log(res))
+        }} >Consulta canciones</button>
+      </div>
+
+      
 
       <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
         <a
