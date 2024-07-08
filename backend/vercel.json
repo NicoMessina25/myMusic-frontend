@@ -2,14 +2,14 @@
     "version": 2,
     "builds": [
         {
-            "src": "*.py",
+            "src": "entrypoint.py",
             "use": "@vercel/python"
         }
     ],
     "routes": [
         {
             "src": "(.*)",
-            "dest": "app.py"
+            "dest": "entrypoint.py"
         }
     ]
 }
