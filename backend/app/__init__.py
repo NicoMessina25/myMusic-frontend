@@ -34,7 +34,6 @@ def create_app(settings_module):
 
     return app
 
-
 def register_error_handlers(app):
     @app.errorhandler(Exception)
     def handle_exception_error(e):
