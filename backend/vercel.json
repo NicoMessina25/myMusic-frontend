@@ -1,9 +1,15 @@
 {
+    "version": 2,
     "builds": [
-        { "src": "*.py", "use": "@vercel/python" }
+        {
+            "src": "*.py",
+            "use": "@vercel/python"
+        }
     ],
-    "redirects": [
-        { "source": "/", "destination": "/entrypoint.py" }
-    ]  
-    
-}
+    "routes": [
+        {
+            "src": "(.*)",
+            "dest": "entrypoint.py"
+        }
+    ]
+  }
