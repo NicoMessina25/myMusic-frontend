@@ -46,7 +46,7 @@ export default function Home() {
       </div>
 
       <div className="flex">
-        <button disabled onClick={()=>{
+        <button onClick={()=>{
           saveSong( {
             title: "The Godfather",
             length: 10500,
