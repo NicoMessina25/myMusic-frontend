@@ -1,8 +1,8 @@
  
 
-import useRouter from '@/hooks/useRouter';
 import { Button } from '../../ui/button';
 import { Icon } from '@iconify/react/dist/iconify.js';
+import { useRouter } from 'next/router';
 import React from 'react'
 
 
