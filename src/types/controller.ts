@@ -4,7 +4,7 @@ import { TError } from "./fetcher";
 export interface TResult {
     data?: CustomResponse | null;
     error?: TError;
-    loading: boolean;
+    loading?: boolean;
 }
 
 export interface ControllerProps {

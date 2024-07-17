@@ -1,10 +1,18 @@
+import { Artist } from "./artist"
 import { User } from "./user"
 
 export interface Song {
-    id?:number
+    songId?:number
     title:string
     length:number
-    year:number
-    director:string
-    actors:User[]
+    releaseDate:Date | null
+    artists:Artist[]
+}
+
+export const defaultSong:Song = {
+    songId: -1,
+    title: "",
+    length: 0,
+    releaseDate: null,
+    artists:[]
 }

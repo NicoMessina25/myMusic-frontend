@@ -1,6 +1,6 @@
 export interface TError {
     error:boolean,
-    message:string | undefined
+    message?:string
 }
 
 export type FetcherResult<TEntity> = {data: TEntity[] | TEntity | undefined, loading: boolean, error: TError, refetch: ()=>void}

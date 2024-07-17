@@ -9,18 +9,17 @@ import Spinner from '../Spinner/Spinner';
 
 interface GenericEditEntityViewProps<TEntity> extends EditProps {
     useFetcher: Fetcher<TEntity>,
-    useEntityCont: (props: ControllerProps) => ControllerInterface
+    useManager: (props: ControllerProps) => ControllerInterface
     formComponent: (props: FormProps<TEntity>) => React.JSX.Element
 }
 
-export default function GenericEditEntityView<TEntity>({params, useFetcher, useEntityCont, formComponent}:GenericEditEntityViewProps<TEntity>) {
+export default function GenericEditEntityView<TEntity>({params, useFetcher, useManager, formComponent}:Readonly<GenericEditEntityViewProps<TEntity>>) {
 
     const {id} = params;
     const router = useRouter();
-    const {data, loading, refetch} = useFetcher(id);
-    const {update:{updateEntity}} = useEntityCont({onUpdate:()=>{
+    const {data, loading} = useFetcher(id);
+    const {update:{updateEntity}} = useManager({onUpdate:()=>{
         router.back();
-        refetch();
     }});
 
 

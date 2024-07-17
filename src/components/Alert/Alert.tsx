@@ -22,7 +22,7 @@ export const Alert = (alert:IAlert) => {
 
   //const [color] = useState<string>(getAlertColor(type));
 
-  return <div className={`flex px-3 py-7 items-center justify-between bg-cyan-300 rounded-lg border border-cyan-600 ${style.alert}`}>
+  return <div key={title} className={`flex px-3 py-7 items-center justify-between bg-cyan-300 rounded-lg border border-cyan-600 ${style.alert}`}>
         {icon && <Icon icon={icon} className={`text-cyan-700 text-2xl`} />}
         <div className={`flex flex-col flex-grow ml-5`}>
           <p className={`font-semibold text-cyan-800`}>{title}</p>  

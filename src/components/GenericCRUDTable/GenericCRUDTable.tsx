@@ -6,19 +6,22 @@ import Spinner from '../Spinner/Spinner';
 import { Indexable } from '@/types/indexable'
 import { Fetcher } from '@/types/fetcher'
 import { NextRouter, useRouter } from 'next/router'
-import AddButton from '../Buttons/AddButton/AddButton'
+import { ControllerInterface, ControllerProps } from '@/types/controller';
 
 interface GenericCRUDViewProps<TEntity> {
     useFetcher: Fetcher<TEntity>,
-    deleteEntity: (e:TEntity)=>void 
+    useManager: (props: ControllerProps) => ControllerInterface 
     columns: ColumnProps<TEntity>[],
-    entityIdField: string
+    entityIdField: keyof TEntity
 }
 
-export default function GenericCRUDTable<TEntity extends Indexable>({useFetcher, deleteEntity, columns, entityIdField}:Readonly<GenericCRUDViewProps<TEntity>>) {
+export default function GenericCRUDTable<TEntity extends Indexable>({useFetcher, useManager, columns, entityIdField}:Readonly<GenericCRUDViewProps<TEntity>>) {
     const router:NextRouter = useRouter()
-    const {data, loading} = useFetcher();
-  
+    const {data, loading, refetch} = useFetcher();
+    const { delete: {deleteEntity} } = useManager({onDelete: ()=>{
+      refetch()
+    }})
+
     if(loading)
       return <Spinner/>
     
@@ -26,11 +29,8 @@ export default function GenericCRUDTable<TEntity extends Indexable>({useFetcher,
       return
       
     return (
-      <div>
         <DataTable columns={columns} data={data ?? []} onEdit={(c)=>{
-          router.push(`./form/${c[entityIdField]}`)
-        }} onDelete={deleteEntity} />
-        <AddButton onClick={()=>router.push("./form")} className='my-3' />
-      </div>
+          router.push(`${router.pathname}/form/${c[entityIdField]}`)
+        }} onDelete={deleteEntity} onAdd={() => router.push(`${router.pathname}/form`)} />
     )
 }
