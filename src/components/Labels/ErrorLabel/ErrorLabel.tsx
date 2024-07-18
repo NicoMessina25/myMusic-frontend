@@ -8,5 +8,5 @@ interface ErrorLabelProps{
 }
 
 export default function ErrorLabel({text, htmlFor, className = "",error}:ErrorLabelProps) {
-  return error ?  <label id={`${htmlFor}-error`} className={'text-red-500 text-xs ' + className}>{text}</label>:<></>
+  return error ?  <label id={`${htmlFor}-error`} className={'text-danger text-xs ' + className}>{text}</label>:<></>
 }

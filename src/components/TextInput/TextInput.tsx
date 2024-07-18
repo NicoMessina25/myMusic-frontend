@@ -20,9 +20,9 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     
 
     return (
-      <div className={className + " my-2"}>
+      <div className={className + " flex flex-col gap-y-1.5 my-2"}>
         {label && (
-          <Label htmlFor={name} className='font-semibold' text={label} required={required} />
+          <Label htmlFor={name} className={`font-semibold ${error ? "text-danger":""}`} text={label} required={required} />
         )}
         <Input
           {...props}
@@ -31,7 +31,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
           type={type}
           step={"any"}
           id={name}
-          className={`${inputClassName} text-zinc-300 ${error? "border-red-500 border-2":""} w-full rounded focus:outline-0 px-2 py-1`}
+          className={`${inputClassName} ${error? "border-danger text-danger":"text-zinc-300"} w-full rounded-medium focus:outline-0 px-2 py-1`}
           aria-invalid={!!error}
           aria-errormessage={`${name}-error`}
         />

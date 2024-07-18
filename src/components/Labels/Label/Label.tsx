@@ -8,7 +8,7 @@ interface LabelProps{
 }
 
 export function Label({htmlFor, text = "", required,className=""}:Readonly<LabelProps>) {
-  return <LabelShadcn htmlFor={htmlFor} className={`text-rickMortyLight ${className}`}>{text} {required ? <span>*</span>:<></>}</LabelShadcn>
+  return <LabelShadcn htmlFor={htmlFor} className={`${className}`}>{text} {required ? <span className="text-red-400">*</span>:<></>}</LabelShadcn>
 
 
 }

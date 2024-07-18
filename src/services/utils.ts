@@ -15,7 +15,7 @@ export function toISOString(date?: Date | null, time?:boolean): string | null {
     return `${year}-${month}-${day}` + (time ? `T${hours}:${minutes}:${seconds}.${milliseconds}`:"");
 }
 
-export function seconds2time(seconds?: number | null): string {
+/* export function seconds2time(seconds?: number | null): string {
     if (!seconds) return "";
 
     const hours = seconds >= 3600 ? Math.floor(seconds / 3600).toString().padStart(2, '0') + ":" : "";
@@ -23,7 +23,7 @@ export function seconds2time(seconds?: number | null): string {
     const remainingSeconds = Math.floor(seconds % 60).toString().padStart(2, '0');
 
     return `${hours}${minutes}${remainingSeconds}`;
-}
+} */
 
 export function getDate(date?: string | number | Date | null): Date | null {
     if(!date) return null
@@ -34,3 +34,43 @@ export function formatDate(date: Date | null, formatStr: string, options?: Forma
     if(!date) return ""
     return format(date, formatStr, options)
 }
+
+export const getSecondsFromHHMMSS = (value:string) => {
+    const [str1, str2, str3] = value.split(":");
+
+    const val1 = Number(str1);
+    const val2 = Number(str2);
+    const val3 = Number(str3);
+
+    if (!isNaN(val1) && isNaN(val2) && isNaN(val3)) {
+    // seconds
+    return val1;
+    }
+
+    if (!isNaN(val1) && !isNaN(val2) && isNaN(val3)) {
+    // minutes * 60 + seconds
+    return val1 * 60 + val2;
+    }
+
+    if (!isNaN(val1) && !isNaN(val2) && !isNaN(val3)) {
+    // hours * 60 * 60 + minutes * 60 + seconds
+    return val1 * 60 * 60 + val2 * 60 + val3;
+    }
+
+    return 0;
+};
+
+export const toHHMMSS = (secs?: number | null): string => {
+    if(!secs) return ""
+
+    const secNum = parseInt(secs.toString(), 10);
+    const hours = Math.floor(secNum / 3600);
+    const minutes = Math.floor(secNum / 60) % 60;
+    const seconds = secNum % 60;
+
+    return [hours, minutes, seconds]
+    .map((val) => (val < 10 ? `0${val}` : val))
+    .filter((val, index) => val !== "00" || index > 0)
+    .join(":")
+    .replace(/^0/, "");
+};
