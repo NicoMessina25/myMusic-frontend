@@ -1,26 +1,9 @@
- 
-
-import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
-
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "../ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../ui/popover"
-import { Label } from "../Labels/Label/Label"
-import ErrorLabel from "../Labels/ErrorLabel/ErrorLabel"
-import { Indexable } from "@/types/indexable"
-import { InputProps } from "@/types/input"
+import React, { Key, useEffect } from "react";
+import {Autocomplete, AutocompleteItem, MenuTriggerAction} from "@nextui-org/react";
+import { Indexable } from "@/types/indexable";
+import { InputProps } from "@/types/input";
+import { Label } from "../Labels/Label/Label";
+import { useFilter } from "@react-aria/i18n";
 
 interface ComboboxProps<TItem extends Indexable> extends InputProps{
   items: TItem[],
@@ -29,63 +12,96 @@ interface ComboboxProps<TItem extends Indexable> extends InputProps{
   notFoundText:string,
   value: TItem | undefined,
   onChange: (i:TItem|undefined) => void,
+  onInputChange?:(value:string) => void,
+  allowsCustomValue?:boolean
 }
 
-export function Combobox<TItem extends Indexable>({items,placeholder = "",optionLabel,keyField,label,notFoundText,onChange,error,value,className=""}:ComboboxProps<TItem>) {
-  const [open, setOpen] = React.useState(false)
+export function Combobox<TItem extends Indexable>({items,placeholder = "",optionLabel,keyField,label="",notFoundText,onChange,error,value,className="",required, ariaLabel = "", onInputChange, allowsCustomValue}:ComboboxProps<TItem>) {
+  const [fieldState, setFieldState] = React.useState<{
+    selectedKey: string | null,
+    inputValue: string,
+    items: TItem[]
+  }>({
+    selectedKey: "",
+    inputValue: "",
+    items,
+  });
+
+  useEffect(()=>{
+    setFieldState({...fieldState, items})
+  },[items.length])
+
+  useEffect(()=>{
+    (!value || !value[optionLabel]) && setFieldState({...fieldState, inputValue:""})
+  },[value?.[optionLabel]])
+
+  // Implement custom filtering logic and control what items are
+  // available to the Autocomplete.
+  const {startsWith} = useFilter({sensitivity: "base"});
+
+  // Specify how each of the Autocomplete values should change when an
+  // option is selected from the list box
+  const onSelectionChange = (key:string) => {
+    setFieldState((prevState) => {
+      let selectedItem = prevState.items.find((option) => option[keyField] === key);
+
+      return {
+        inputValue: selectedItem?.[optionLabel] || "",
+        selectedKey: "",
+        items: items.filter((item) => startsWith(item[optionLabel], selectedItem?.[optionLabel] || "")),
+      };
+    });
+  };
+
+  // Specify how each of the Autocomplete values should change when the input
+  // field is altered by the user
+  const _onInputChange = (value:string) => {
+    onInputChange?.(value)
+    setFieldState((prevState) => ({
+      inputValue: value,
+      selectedKey: value === "" ? null : prevState.selectedKey,
+      items: items.filter((item) => startsWith(item[optionLabel], value)),
+    }));
+  };
+
+  // Show entire list if user opens the menu manually
+  const onOpenChange = (isOpen:boolean, menuTrigger:MenuTriggerAction) => {
+    if (menuTrigger === "manual" && isOpen) {
+      setFieldState((prevState) => ({
+        inputValue: prevState.inputValue,
+        selectedKey: prevState.selectedKey,
+        items,
+      }));
+    }
+  };
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <div className={`flex flex-col ${className}`}>
-      {label && <Label text={label} className="my-1" />}
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className={`w-full justify-between my-2 py-2 text-zinc-300 ${error? "border-red-500 border-2":""}`}
-        >
-          {value
-            ? items.find((item) => item[keyField] === value[keyField])?.[optionLabel]
-          : placeholder}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger></div>
-      <ErrorLabel error={!!error} text={error} />
-      <PopoverContent className="w-full p-0 h-[300px] dark">
-        <Command>
-          <CommandInput placeholder={placeholder} />
-          <CommandEmpty>{notFoundText}</CommandEmpty>
-          <CommandGroup className="overflow-y-auto">
-            {items.map((item) => (
-              <CommandItem
-                key={item[keyField] as React.Key}
-                onSelect={(labelItemSelected:string) => {
-                  console.log(labelItemSelected);
-    
-                  const itemSelected:TItem | null = items.find(i=>i[optionLabel].toLowerCase()===labelItemSelected) ?? null
-          
-                  if(itemSelected?.[keyField] === value?.[keyField]){
-                    onChange(undefined)
-                  }  
-                  else if(itemSelected) {
-                    onChange(itemSelected)
-                  } 
-                  
-                  setOpen(false)
-                }}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value?.[keyField] === item[keyField] ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {item[optionLabel]}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  )
+    <Autocomplete
+      items={fieldState.items}
+      aria-label={ariaLabel}
+      label={label && <Label className='font-semibold mb-1' text={label} required={required} />}
+      placeholder={placeholder}
+      className={`max-w-xs ${className}`}
+      labelPlacement="outside"
+      variant="bordered"
+      isInvalid={!!error}
+      errorMessage={error}
+      selectedKey={fieldState.selectedKey}
+      inputValue={value?.[optionLabel] || fieldState.inputValue}
+      onInputChange={_onInputChange}
+      onOpenChange={onOpenChange}
+      allowsCustomValue={allowsCustomValue}
+      onSelectionChange={(key)=>{
+        if(key || !allowsCustomValue){
+          onChange(items.find(i => i[keyField] == key))
+          onSelectionChange(key?.toString() ?? "")
+        }
+      }}
+      listboxProps={{
+        emptyContent: notFoundText
+      }}
+    >
+      {(item) => <AutocompleteItem key={item[keyField]}>{item[optionLabel]}</AutocompleteItem>}
+    </Autocomplete>
+  );
 }

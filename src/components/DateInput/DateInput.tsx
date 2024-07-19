@@ -17,73 +17,47 @@ interface DateInputProps extends InputProps {
     minDate?: Date
 }
 
-function dateToCalendarDate(date?: Date | null): CalendarDate | undefined {
+function dateToCalendarDate(date?: Date | string | number | null): CalendarDate | undefined {
   if(!date) return undefined
   return parseDate(toISOString(date) ?? "");
 }
 
-export function DateInput({value, onChange, label, maxDate, minDate, className = "", error, required}:Readonly<DateInputProps>) {
+export const DateInput = React.forwardRef<HTMLInputElement, DateInputProps>(
+  ({ value, onChange, label, maxDate, minDate, className = "", error, required }, ref) => {
 
-  const [calendarValue, setCalendarValue] = React.useState<CalendarDate|undefined|null>(null);
+    const [calendarValue, setCalendarValue] = React.useState<CalendarDate | undefined | null>(null)
 
-  React.useEffect(()=>{
-    setCalendarValue(dateToCalendarDate(getDate(value)))
-  },[])
+    React.useEffect(() => {
+      setCalendarValue(dateToCalendarDate(value))
+    }, [value])
 
-  return <I18nProvider locale="ES"> <DatePicker 
-    label={label && <Label className='font-semibold mb-1' text={label} required={required} />}
-    className={`${className} text-zinc-300 w-full rounded focus:outline-0 my-2`}
-    variant="bordered"
-    dateInputClassNames={{inputWrapper:"border-1 border-input hover:border-1 hover:border-input px-2 py-1"}}
-    showMonthAndYearPickers
-    isInvalid={!!error}
-    errorMessage={(value) => {
-      if (value.isInvalid) {
-        return error;
-      }
-    }}
-    maxValue={dateToCalendarDate(maxDate)}
-    minValue={dateToCalendarDate(minDate)}
-    value={calendarValue}
-    onChange={(calendarDate: CalendarDate | null) => {
-      setCalendarValue(calendarDate)
-      calendarDate ? onChange(new Date(calendarDate.year, calendarDate.month - 1, calendarDate.day)) : onChange(undefined)
-    }}
-    labelPlacement="outside"
-  /> </I18nProvider>
-    {/* <div className={`flex flex-col my-2 ${className} ${style.dateInput}`}>
-      <Popover>
-        {label && <Label text={label} className="my-1" />}
-        <PopoverTrigger asChild>
-          <Button
-            ref={buttonRef}
-            variant={"outline"}
-            className={cn(
-              "w-full justify-start text-left font-normal",
-              !value && "text-muted-foreground"
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {value ? formatDate(getDate(value), "dd/MM/yyyy") : <span>{placeholder}</span>}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
-          <Calendar
-            mode="single"
-            selected={value}
-            onSelect={(e) => {
-              onChange(e)
-              buttonRef.current?.click()
-            }}
-            toDate={maxDate}
-            fromDate={minDate}
-            initialFocus
-            defaultMonth={getDate(value) ?? undefined}
-            fromYear={1900}
-            captionLayout="dropdown"
-          />
-        </PopoverContent>
-      </Popover>
-    </div> */}
-    
-}
+    return (
+      <I18nProvider locale="ES">
+        <DatePicker
+          label={label && <Label className="font-semibold mb-1" text={label} required={required} />}
+          className={`${className} text-zinc-300 w-full rounded focus:outline-0 my-2`}
+          variant="bordered"
+          dateInputClassNames={{ inputWrapper: "border-1 border-input hover:border-1 hover:border-input px-2 py-1" }}
+          showMonthAndYearPickers
+          isInvalid={!!error}
+          errorMessage={(value) => {
+            if (value.isInvalid) {
+              return error
+            }
+          }}
+          maxValue={dateToCalendarDate(maxDate)}
+          minValue={dateToCalendarDate(minDate)}
+          value={calendarValue}
+          onChange={(calendarDate: CalendarDate | null) => {
+            setCalendarValue(calendarDate)
+            calendarDate ? onChange(new Date(calendarDate.year, calendarDate.month - 1, calendarDate.day)) : onChange(undefined)
+          }}
+          labelPlacement="outside"
+          ref={ref}
+        />
+      </I18nProvider>
+    )
+  }
+)
+
+DateInput.displayName = "DateInput"

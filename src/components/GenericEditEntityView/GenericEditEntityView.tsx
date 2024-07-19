@@ -26,7 +26,7 @@ export default function GenericEditEntityView<TEntity>({params, useFetcher, useM
     if(loading)
         return <Spinner/>
     
-    if(data instanceof Array)
+    if(data instanceof Array || !data)
         return
  
 

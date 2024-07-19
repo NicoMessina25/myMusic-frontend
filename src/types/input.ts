@@ -4,4 +4,5 @@ export interface InputProps {
     error?: string|undefined;
     placeholder?: string;
     required?: boolean; 
+    ariaLabel?:string
 }

@@ -1,6 +1,6 @@
 import { getSecondsFromHHMMSS, toHHMMSS } from "@/services/utils";
 import { InputProps } from "@/types/input";
-import { ChangeEvent, ChangeEventHandler, FocusEvent, useState } from "react";
+import React, { ChangeEvent, ChangeEventHandler, FocusEvent, useState } from "react";
 import { TextInput } from "../TextInput/TextInput";
 
 interface TimeInputProps extends InputProps {
@@ -8,7 +8,7 @@ interface TimeInputProps extends InputProps {
     value?: number | null
 }
 
-export default function TimeInput(props:TimeInputProps){
+export const TimeInput = React.forwardRef<HTMLInputElement, TimeInputProps>((props:TimeInputProps) => {
     const defaultValue = "0:00"
     const [value, setValue] = useState(toHHMMSS(props.value) || defaultValue);
 
@@ -35,5 +35,8 @@ export default function TimeInput(props:TimeInputProps){
         value={value}
        />
     );
-  };
+  });
+
+  
+TimeInput.displayName = "TimeInput"
   

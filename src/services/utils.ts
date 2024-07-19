@@ -1,7 +1,8 @@
 import { format, FormatDateOptions, FormatOptions } from "date-fns";
 
-export function toISOString(date?: Date | null, time?:boolean): string | null {
-    if (!date) return null;
+export function toISOString(date?: Date | number | string | null, time?:boolean): string | null {
+    date = getDate(date)
+    if (!date) return null;    
 
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Los meses en JavaScript son 0-indexados
