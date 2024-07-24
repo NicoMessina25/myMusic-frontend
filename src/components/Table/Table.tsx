@@ -30,7 +30,8 @@ export interface ColumnProps<TData> {
   accessorKey: keyof TData,
   header:string,
   filter?:boolean,
-  body?: (row:TData) => React.ReactNode
+  body?: (row:TData) => React.ReactNode,
+  style?: React.CSSProperties
 }
 
 interface DataTableProps<TData, TValue> {
@@ -122,7 +123,7 @@ export function DataTable<TData, TValue>({
                 data-state={row.getIsSelected() && "selected"}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} >
+                  <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -134,7 +135,7 @@ export function DataTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                Sin datos
               </TableCell>
             </TableRow>
           )}

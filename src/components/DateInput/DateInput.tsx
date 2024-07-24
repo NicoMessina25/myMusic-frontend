@@ -3,23 +3,23 @@
 import * as React from "react"
 
 import { InputProps } from "@/types/input"
-import { getDate, toISOString } from "@/services/utils"
+import { getDate } from "@/services/utils"
 import {DatePicker} from "@nextui-org/date-picker";
-import { CalendarDate } from "@nextui-org/react"
-import {parseDate} from "@internationalized/date";
+import { CalendarDate } from "@internationalized/date";
 import {I18nProvider} from "@react-aria/i18n";
 import { Label } from "../Labels/Label/Label";
 
 interface DateInputProps extends InputProps {
     value: Date | undefined
-    onChange: (d: Date | undefined) => void
+    onChange: (d: Date | undefined | null) => void
     maxDate?: Date,
     minDate?: Date
 }
 
 function dateToCalendarDate(date?: Date | string | number | null): CalendarDate | undefined {
+  date = getDate(date)
   if(!date) return undefined
-  return parseDate(toISOString(date) ?? "");
+  return new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
 }
 
 export const DateInput = React.forwardRef<HTMLInputElement, DateInputProps>(
@@ -50,7 +50,9 @@ export const DateInput = React.forwardRef<HTMLInputElement, DateInputProps>(
           value={calendarValue}
           onChange={(calendarDate: CalendarDate | null) => {
             setCalendarValue(calendarDate)
-            calendarDate ? onChange(new Date(calendarDate.year, calendarDate.month - 1, calendarDate.day)) : onChange(undefined)
+          }}
+          onBlur={()=>{
+            calendarValue && calendarValue.year.toString().length >= 4 ? onChange(new Date(calendarValue.year, calendarValue.month - 1, calendarValue.day)) : onChange(null)
           }}
           labelPlacement="outside"
           ref={ref}

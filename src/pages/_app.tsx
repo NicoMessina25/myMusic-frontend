@@ -6,6 +6,9 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { Provider } from "react-redux";
 import {NextUIProvider} from '@nextui-org/react'
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
 
 export default function App({ Component, pageProps }: AppProps) {
   return <NextUIProvider> 

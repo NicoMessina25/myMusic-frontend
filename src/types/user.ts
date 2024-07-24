@@ -1,5 +1,6 @@
 export interface User {
-    id?:number
-    name:string
-    song?:number
+    userId?:number
+    username:string
+    password:string
+    email?:string
 }

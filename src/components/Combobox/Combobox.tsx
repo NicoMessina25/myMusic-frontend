@@ -4,9 +4,9 @@ import { Indexable } from "@/types/indexable";
 import { InputProps } from "@/types/input";
 import { Label } from "../Labels/Label/Label";
 import { useFilter } from "@react-aria/i18n";
+import { Button } from "../ui/button";
 
-interface ComboboxProps<TItem extends Indexable> extends InputProps{
-  items: TItem[],
+export interface CommonComboboxProps<TItem extends Indexable> extends InputProps{
   optionLabel:keyof TItem,
   keyField: keyof TItem,
   notFoundText:string,
@@ -14,9 +14,16 @@ interface ComboboxProps<TItem extends Indexable> extends InputProps{
   onChange: (i:TItem|undefined) => void,
   onInputChange?:(value:string) => void,
   allowsCustomValue?:boolean
+  addCustomValueButtonLabel?: string
+  onAddCustomValue?:(i:string) => void,
+  isLoading?:boolean
 }
 
-export function Combobox<TItem extends Indexable>({items,placeholder = "",optionLabel,keyField,label="",notFoundText,onChange,error,value,className="",required, ariaLabel = "", onInputChange, allowsCustomValue}:ComboboxProps<TItem>) {
+interface ComboboxProps<TItem extends Indexable> extends CommonComboboxProps<TItem> {
+  items: TItem[],
+}
+
+export function Combobox<TItem extends Indexable>({items,placeholder = "",optionLabel,keyField,label="",notFoundText,onChange,error,value,className="",required, ariaLabel = "", onInputChange, allowsCustomValue, addCustomValueButtonLabel, onAddCustomValue, isLoading}:Readonly<ComboboxProps<TItem>>) {
   const [fieldState, setFieldState] = React.useState<{
     selectedKey: string | null,
     inputValue: string,
@@ -46,7 +53,7 @@ export function Combobox<TItem extends Indexable>({items,placeholder = "",option
       let selectedItem = prevState.items.find((option) => option[keyField] === key);
 
       return {
-        inputValue: selectedItem?.[optionLabel] || "",
+        inputValue: selectedItem?.[optionLabel] ?? "",
         selectedKey: "",
         items: items.filter((item) => startsWith(item[optionLabel], selectedItem?.[optionLabel] || "")),
       };
@@ -76,32 +83,39 @@ export function Combobox<TItem extends Indexable>({items,placeholder = "",option
   };
 
   return (
-    <Autocomplete
-      items={fieldState.items}
-      aria-label={ariaLabel}
-      label={label && <Label className='font-semibold mb-1' text={label} required={required} />}
-      placeholder={placeholder}
-      className={`max-w-xs ${className}`}
-      labelPlacement="outside"
-      variant="bordered"
-      isInvalid={!!error}
-      errorMessage={error}
-      selectedKey={fieldState.selectedKey}
-      inputValue={value?.[optionLabel] || fieldState.inputValue}
-      onInputChange={_onInputChange}
-      onOpenChange={onOpenChange}
-      allowsCustomValue={allowsCustomValue}
-      onSelectionChange={(key)=>{
-        if(key || !allowsCustomValue){
-          onChange(items.find(i => i[keyField] == key))
-          onSelectionChange(key?.toString() ?? "")
-        }
-      }}
-      listboxProps={{
-        emptyContent: notFoundText
-      }}
-    >
-      {(item) => <AutocompleteItem key={item[keyField]}>{item[optionLabel]}</AutocompleteItem>}
-    </Autocomplete>
+    <div className="flex items-center gap-3">
+      <Autocomplete
+        isLoading={isLoading}
+        items={fieldState.items}
+        aria-label={ariaLabel}
+        label={label && <Label className='font-semibold mb-1' text={label} required={required} />}
+        placeholder={placeholder}
+        className={`max-w-xs ${className}`}
+        labelPlacement="outside"
+        variant="bordered"
+        isInvalid={!!error}
+        errorMessage={error}
+        selectedKey={fieldState.selectedKey}
+        inputValue={value?.[optionLabel] || fieldState.inputValue}
+        onInputChange={_onInputChange}
+        onOpenChange={onOpenChange}
+        allowsCustomValue={allowsCustomValue}
+        onSelectionChange={(key)=>{
+          if(key || !allowsCustomValue){
+            onChange(items.find(i => i[keyField] == key))
+            onSelectionChange(key?.toString() ?? "")
+          }
+        }}
+        listboxProps={{
+          emptyContent: notFoundText
+        }}
+      >
+        {(item) => <AutocompleteItem key={item[keyField]}>{item[optionLabel]}</AutocompleteItem>}
+      </Autocomplete>
+      {onAddCustomValue && <Button variant='outline' type='button' disabled={!fieldState.inputValue || fieldState.items.length > 0} onClick={() => {
+        onAddCustomValue(fieldState.inputValue)
+      }} >{addCustomValueButtonLabel}</Button>}
+    </div>
+    
   );
 }

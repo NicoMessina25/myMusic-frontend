@@ -1,5 +1,5 @@
 import { getArtistById, getArtists } from '@/services/artists';
-import { FetcherResult } from '@/types/fetcher';
+import { FetcherResult, FetchProps } from '@/types/fetcher';
 import { Artist } from '@/types/artist';
 import { useEffect, useState } from 'react';
 
@@ -14,8 +14,8 @@ export default function useArtists(entityId?:number):FetcherResult<Artist> {
         fetch()
     },[])
 
-    function fetch(){
-        (entityId ? getArtistById(entityId) : getArtists()).then(res=>{
+    function fetch(props?:FetchProps){
+        (entityId ? getArtistById(entityId) : getArtists(props)).then(res=>{
             if(res.success)
                 setData(res.data)
             else {

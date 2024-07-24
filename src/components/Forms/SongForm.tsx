@@ -1,7 +1,7 @@
  
 
 import React, { useEffect, useState } from 'react'
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, ControllerRenderProps } from 'react-hook-form';
 import { FormProps, requiredMessage } from '@/types/form';
 import { Song, defaultSong } from '@/types/song';
 import { TextInput } from '../TextInput/TextInput';
@@ -18,30 +18,23 @@ import { Combobox } from '../Combobox/Combobox';
 import useArtists from '@/hooks/fetchers/useArtists';
 import { getDate } from '@/services/utils';
 import useNotification from '@/hooks/useNotification';
+import { DynamicCombobox } from '../DynamicCombobox/DynamicCombobox';
 
 export default function SongForm({onSubmit, onCancel, initialValue}:Readonly<FormProps<Song>>){
     
     
     const { handleSubmit, control, formState: {errors}} = useForm<Song>({defaultValues: initialValue ?? defaultSong})
     const [newArtist, setNewArtist] = useState<Artist>(defaultArtist)
-    const {data: artists, loading} = useArtists()
-    const [artistsToAdd, setArtistsToAdd] = useState<Artist[]>([])
     const {notifyError} = useNotification()
 
-    useEffect(()=>{
-        artists instanceof Array && !loading && setArtistsToAdd(artists.filter(a => !initialValue?.artists.map(artist => artist.artistId).includes(a.artistId)))
-    },[initialValue?.artists.length, loading])
-
-    function addToArtistToAdd(a:Artist){
-        const _artists = [...artistsToAdd]
-        _artists.push(a)
-        setArtistsToAdd(_artists)
-    }
-
-    function removeFromArtistsToAdd(a:Artist){
-        const _artists = [...artistsToAdd]
-        _artists.splice(_artists.indexOf(a),1)
-        setArtistsToAdd(_artists)
+    function addArtist(field:ControllerRenderProps<Song, "artists">, a:Artist){
+        if(field.value.find(artist => artist.name.localeCompare(a.name) === 0))
+            notifyError("Artista ya agregado a canción")
+        else {
+            field.value?.push(a)
+            field.onChange(field.value)
+            setNewArtist(defaultArtist)
+        }
     }
 
     const inputsWidth = 'w-full md:w-2/5 lg:w-1/4 mx-1';
@@ -123,6 +116,9 @@ export default function SongForm({onSubmit, onCancel, initialValue}:Readonly<For
             <Controller
                 name='artists'
                 control={control}
+                rules={{
+                    validate: value => value.length > 0 || 'La canción debe tener al menos un artista'
+                }}
                 render={({field})=>
                     <div className='my-3 w-full p-4 justify-center rounded bg-slate-900'>
                         {field.value && field.value.length > 0 && <Label className='my-1 text-lg' text='Artistas' />}
@@ -133,8 +129,6 @@ export default function SongForm({onSubmit, onCancel, initialValue}:Readonly<For
                                     field.value?.splice(field.value.indexOf(artist),1)
                                     field.onChange(field.value)
                                     setNewArtist(defaultArtist)
-
-                                    artist.artistId && artist.artistId > 0 && addToArtistToAdd(artist)
                                 }, errors.artists?.[index]?.name?.message)
                             })}
                         </div>
@@ -142,36 +136,26 @@ export default function SongForm({onSubmit, onCancel, initialValue}:Readonly<For
 
                 
                         <div className='flex gap-3'>
-                            {<Combobox ariaLabel='Nombre' optionLabel={"name"} keyField={"artistId"} placeholder='Agrega artista existente' value={newArtist} items={artistsToAdd} onInputChange={(value:string) => {
-                                setNewArtist({...newArtist, name: value})
-                            }}  onChange={(a)=>{
-                                a && field.value?.push(a)
-                                field.onChange(field.value)
-                                setNewArtist(defaultArtist)
-
-                                a && removeFromArtistsToAdd(a)
-                            }} notFoundText='No se encontraron artistas' allowsCustomValue />}
-
-
-                            {/*  <TextInput label='Peso máximo' name='maxweight' value={newArtist.maxweight.toString()} onChange={(e)=>{
-                                setNewArtist({...newArtist, maxweight: Number(e.target.value)})
-                            }} type='number' /> */}
-
-                        
-                            <Button variant='outline' type='button' onClick={()=>{
-                                const a = {artistId: -1, name: newArtist.name}
-
-                                if(field.value.find(artist => artist.name.localeCompare(newArtist.name) === 0))
-                                    notifyError("Artista existente")
-                                else {
-                                    field.value?.push(a)
-                                    field.onChange(field.value)
-                                    setNewArtist(defaultArtist)
-                                }
-                                
-                            }} >Agregar nuevo artista</Button>
-                                
-                            
+                            {<DynamicCombobox 
+                                ariaLabel='Nombre' 
+                                optionLabel={"name"}
+                                error={errors.artists?.message} 
+                                keyField={"artistId"}
+                                placeholder='Agrega artista existente' 
+                                value={newArtist} 
+                                useFetcher={useArtists}
+                                onInputChange={(value:string) => {
+                                    setNewArtist({...newArtist, name: value})
+                                }}  
+                                onChange={(a)=>{
+                                   a && addArtist(field,a)
+                                }} 
+                                notFoundText='No se encontraron artistas' 
+                                allowsCustomValue 
+                                addCustomValueButtonLabel='Agregar nuevo artista' 
+                                onAddCustomValue={(value)=>
+                                    addArtist(field, {artistId: -1, name: value})}
+                            />}         
                         </div>                       
                     </div>
                 }

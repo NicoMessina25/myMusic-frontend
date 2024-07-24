@@ -9,7 +9,7 @@ export default function useSongs(entityId?:number):FetcherResult<Song> {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
-    const [data, setData] = useState<Song | Song[]>()
+    const [data, setData] = useState<Song | Song[]>([])
 
     useEffect(()=>{
         setLoading(true)

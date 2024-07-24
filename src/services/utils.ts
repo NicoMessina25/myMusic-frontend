@@ -16,16 +16,6 @@ export function toISOString(date?: Date | number | string | null, time?:boolean)
     return `${year}-${month}-${day}` + (time ? `T${hours}:${minutes}:${seconds}.${milliseconds}`:"");
 }
 
-/* export function seconds2time(seconds?: number | null): string {
-    if (!seconds) return "";
-
-    const hours = seconds >= 3600 ? Math.floor(seconds / 3600).toString().padStart(2, '0') + ":" : "";
-    const minutes = hours || seconds >= 60 ? Math.floor((seconds % 3600) / 60).toString().padStart(2, '0') + ":": "" ;
-    const remainingSeconds = Math.floor(seconds % 60).toString().padStart(2, '0');
-
-    return `${hours}${minutes}${remainingSeconds}`;
-} */
-
 export function getDate(date?: string | number | Date | null): Date | null {
     if(!date) return null
     return typeof date === "string" && !date.includes("T") ? new Date(date + "T00:00:00.000") : new Date(date)

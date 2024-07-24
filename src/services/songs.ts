@@ -2,7 +2,7 @@ import { APIURL } from "@/env";
 import { CustomResponse } from "@/types/serverResponse";
 import { Song } from "@/types/song";
 import axios from "axios";
-import { toISOString as toISOString } from "./utils";
+import { toISOString } from "./utils";
 
 export function saveSong(song:Song):Promise<CustomResponse>{
     return axios.post(APIURL + "/api/songs/",{...song, releaseDate: toISOString(song.releaseDate)}).then(res=>res.data)
