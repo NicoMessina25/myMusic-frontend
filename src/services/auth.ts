@@ -24,6 +24,19 @@ export function authenticate(username:string, password:string):Promise<User | nu
     })
 }
 
+export function register(username: string, password: string, email: string): Promise<CustomResponse> {
+    return axios.post(APIURL + "/api/auth/register", {
+        username,
+        password,
+        email
+    }).then((res) => {
+        const resp: CustomResponse = res.data;
+        return resp;
+    }).catch(err => {
+        return err;
+    });
+}
+
 export function logout():Promise<CustomResponse>{
     return api.post('/api/auth/logout').then(res => {        
         return res.data
