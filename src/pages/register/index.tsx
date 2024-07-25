@@ -1,3 +1,4 @@
+import BackButton from "@/components/Buttons/BackButton/BackButton";
 import { TextInput } from "@/components/TextInput/TextInput";
 import { Button } from "@/components/ui/button";
 import useAuth from "@/hooks/useAuth";
@@ -10,7 +11,7 @@ import { NextRouter, useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 
 export default function Register() {
-    const { handleSubmit, control, formState: { errors } } = useForm<User>({ defaultValues: { username: "", password: "", confirmPassword: "" } });
+    const { handleSubmit, control, getValues, formState: { errors } } = useForm<User>({ defaultValues: { username: "", password: "", confirmPassword: "" } });
     const { register } = useAuth();
     const router: NextRouter = useRouter();
     const { notifyError, notifyInfo } = useNotification();
@@ -53,7 +54,9 @@ export default function Register() {
                 <Controller
                     name='password'
                     control={control}
-                    rules={{ required: requiredMessage }}
+                    rules={{ 
+                        required: requiredMessage
+                    }}
                     render={({ field }) =>
                         <TextInput
                             label='Contraseña'
@@ -68,7 +71,10 @@ export default function Register() {
                 <Controller
                     name='confirmPassword'
                     control={control}
-                    rules={{ required: requiredMessage }}
+                    rules={{ 
+                        required: requiredMessage,
+                        validate: value => value === getValues("password") || "Las contraseñas deben ser iguales"
+                    }}
                     render={({ field }) =>
                         <TextInput
                             label='Confirmar Contraseña'
@@ -79,8 +85,11 @@ export default function Register() {
                         />
                     }
                 />
-
-                <Button variant='outline' className='mt-3'>Registrarse</Button>
+                <div className="flex gap-3 mt-3">
+                    <BackButton />
+                    <Button>Registrarse</Button>
+                </div>
+                
             </form>
         </section>
     );

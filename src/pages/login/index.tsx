@@ -57,7 +57,11 @@ export default function Login() {
                         />
                     }
                 />
-                <Button variant='outline' className='mt-3' >Ingresar</Button>
+                <div className="flex gap-3 mt-3">
+                    <Button>Ingresar</Button>
+                    <Button variant='secondary' type="button" onClick={()=>router.push("/register")}>Registrarse</Button>
+                </div>
+                
             </form>
         </section>
     )
