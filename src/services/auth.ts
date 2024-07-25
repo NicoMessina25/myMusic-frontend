@@ -24,13 +24,9 @@ export function authenticate(username:string, password:string):Promise<User | nu
     })
 }
 
-export function logout(){
-    api.post('/logout').then(() => {
-        // Elimina las cookies que contienen los tokens
-        deleteCookie('MYMUSIC');
-        deleteCookie('MYMUSICREFRESH');
-        
-        
+export function logout():Promise<CustomResponse>{
+    return api.post('/api/auth/logout').then(res => {        
+        return res.data
     }).catch(err => {
         console.error("Logout error: ", err);
     });
