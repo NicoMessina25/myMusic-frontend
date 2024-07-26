@@ -31,10 +31,10 @@ export default function Register() {
                     if (customresponse.success) {
                         notifyInfo("Registro exitoso");
                         router.push('/login');
-                    } else notifyError("Error en el registro");
-                }).catch(err => {
+                    } else notifyError(customresponse.message);
+                }).catch((err:CustomResponse) => {
                     loader(false);
-                    notifyError(err);
+                    notifyError(err.message);
                 });
             })}>
                 <Controller

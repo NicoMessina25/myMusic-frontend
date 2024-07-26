@@ -2,7 +2,7 @@ import { APIURL } from "@/env";
 import { LoginResponse } from "@/types/auth";
 import { CustomResponse } from "@/types/serverResponse";
 import { User } from "@/types/user";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { deleteCookie, setCookie } from "./cookies";
 import api from "./axios";
 
@@ -32,8 +32,8 @@ export function register(username: string, password: string, email: string): Pro
     }).then((res) => {
         const resp: CustomResponse = res.data;
         return resp;
-    }).catch(err => {
-        return err;
+    }).catch((err:AxiosError<CustomResponse>) => {
+        return err.response?.data!;
     });
 }
 
