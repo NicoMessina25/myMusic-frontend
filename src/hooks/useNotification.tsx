@@ -15,13 +15,6 @@ export interface UseNotificationProps{
 
 export default function useNotification():UseNotificationProps {
     const dispatch:AppDispatch = useDispatch();
-    
-    /* const getAlertColor = (type:EAlertType):string =>{
-        if(type == EAlertType.ERROR) return "red"
-        if(type == EAlertType.WARNING) return "yellow"
-        if(type == EAlertType.SUCCESS) return "lime"
-        return "cyan"
-    } */
 
     const notifyInfo = (message:string) =>
         dispatch(createAlert({title:"Info",color:"cyan",message,icon:"ph:info-bold"}))

@@ -17,13 +17,14 @@ export interface CommonComboboxProps<TItem extends Indexable> extends InputProps
   addCustomValueButtonLabel?: string
   onAddCustomValue?:(i:string) => void,
   isLoading?:boolean
+  addToListCombobox?:boolean
 }
 
 interface ComboboxProps<TItem extends Indexable> extends CommonComboboxProps<TItem> {
   items: TItem[],
 }
 
-export function Combobox<TItem extends Indexable>({items,placeholder = "",optionLabel,keyField,label="",notFoundText,onChange,error,value,className="",required, ariaLabel = "", onInputChange, allowsCustomValue, addCustomValueButtonLabel, onAddCustomValue, isLoading}:Readonly<ComboboxProps<TItem>>) {
+export function Combobox<TItem extends Indexable>({items,placeholder = "",optionLabel,keyField,label="",notFoundText,onChange,error,value,className="",required, ariaLabel = "", onInputChange, allowsCustomValue, addCustomValueButtonLabel, onAddCustomValue, addToListCombobox, isLoading}:Readonly<ComboboxProps<TItem>>) {
   const [fieldState, setFieldState] = React.useState<{
     selectedKey: string | null,
     inputValue: string,
@@ -48,13 +49,12 @@ export function Combobox<TItem extends Indexable>({items,placeholder = "",option
 
   // Specify how each of the Autocomplete values should change when an
   // option is selected from the list box
-  const onSelectionChange = (key:string) => {
+  const onSelectionChange = (key:string) => {    
     setFieldState((prevState) => {
-      let selectedItem = prevState.items.find((option) => option[keyField] === key);
-
+      let selectedItem = !addToListCombobox ? prevState.items.find((option) => option[keyField] == key) : null;
       return {
         inputValue: selectedItem?.[optionLabel] ?? "",
-        selectedKey: "",
+        selectedKey: !addToListCombobox ? key : "", //para que se quede seleccionado el elemento o no (depende si se va a agregar dicho elemento a otra lista o no)
         items: items.filter((item) => startsWith(item[optionLabel], selectedItem?.[optionLabel] || "")),
       };
     });

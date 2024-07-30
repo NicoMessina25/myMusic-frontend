@@ -2,11 +2,15 @@ import GenericCRUDTable from '@/components/GenericCRUDTable/GenericCRUDTable'
 import GenericLayout from '@/components/GenericLayout/GenericLayout'
 import useSongs from '@/hooks/fetchers/useSongs'
 import useSong from '@/hooks/managers/useSong'
+import useLoggedUser from '@/hooks/useLoggedUser'
 import { formatDate, getDate, toHHMMSS } from '@/services/utils'
+import { EProfile } from '@/types/profile'
 import { Song } from '@/types/song'
 import React from 'react'
 
 export default function Songs() {
+  const user = useLoggedUser()
+
   return <GenericLayout title='Canciones'>
       <div className='w-full py-4'>
         <GenericCRUDTable useFetcher={useSongs} columns={[{
@@ -32,7 +36,10 @@ export default function Songs() {
           
             }}>{row.artists?.map(a => a.name).join(", ")}</p>
           }
-        }]} useManager={useSong} entityIdField='songId'  />
+        }]} useManager={useSong} entityIdField='songId'  
+            deleteWhen={() => !!(user?.profile?.profileId && [EProfile.ADMIN, EProfile.ADMINISTRATIVE].includes(user?.profile?.profileId))}
+            editWhen={() => !!(user?.profile?.profileId && [EProfile.ADMIN, EProfile.ADMINISTRATIVE].includes(user?.profile?.profileId))}
+        />
       </div>
     </GenericLayout>
 }

@@ -3,7 +3,7 @@ import { LoginResponse } from "@/types/auth";
 import { CustomResponse } from "@/types/serverResponse";
 import { User } from "@/types/user";
 import axios, { AxiosError } from "axios";
-import { deleteCookie, setCookie } from "./cookies";
+import { setCookie } from "./cookies";
 import api from "./axios";
 
 export function authenticate(username:string, password:string):Promise<User | null>{
@@ -14,6 +14,7 @@ export function authenticate(username:string, password:string):Promise<User | nu
         const resp:CustomResponse<LoginResponse> = res.data
         if (resp.success) {
             const data = resp.data
+            localStorage.setItem("myMusicUser", JSON.stringify(data.user))
             setCookie("MYMUSIC", data.access_token, data.access_token_expires/(3600*24)) //los datos vienen en segundos
             setCookie("MYMUSICREFRESH", data.refresh_token, data.refresh_token_expires/(3600*24))
             return data.user

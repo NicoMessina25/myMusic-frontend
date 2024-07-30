@@ -26,7 +26,7 @@ export default function Register() {
                     notifyError("Las contraseñas no coinciden");
                     return;
                 }
-                register(u.username, u.password, u.confirmPassword).then((customresponse: CustomResponse) => {
+                register(u.username, u.password, u.email ?? "").then((customresponse: CustomResponse) => {
                     loader(false);
                     if (customresponse.success) {
                         notifyInfo("Registro exitoso");
@@ -47,6 +47,22 @@ export default function Register() {
                             className='w-full'
                             {...field}
                             error={errors.username?.message}
+                        />
+                    }
+                />
+
+                <Controller
+                    name="email"
+                    control={control}
+                    rules={{
+                        required: requiredMessage
+                    }}
+                    render={({ field }) => 
+                        <TextInput
+                            label='Email'
+                            className={"w-full"}
+                            {...field}
+                            error={errors.email?.message}
                         />
                     }
                 />

@@ -13,15 +13,20 @@ export default function useRequestWrapper(): RequestWrapper {
     function request(caller: () => Promise<CustomResponse>, result: TResult, setResult: (result: TResult) => void, onSuccess?: () => void){
         setResult({...result, loading: true})
         caller().then(res=>{
-            setResult({
-                error: {
-                    error: !res.success,
-                    message: res.message
-                },
-                loading: false
-            })
-            notifySuccess(res.message)
-            onSuccess?.()
+            if(res.success){
+                setResult({
+                    error: {
+                        error: !res.success,
+                        message: res.message
+                    },
+                    loading: false
+                })
+                notifySuccess(res.message)
+                onSuccess?.()
+            } else {
+                notifyError(res.message)
+            }
+            
         }).catch(()=>{
             notifyError("Fallo inesperado")
         }).finally(() => setResult({...result, loading: false}))

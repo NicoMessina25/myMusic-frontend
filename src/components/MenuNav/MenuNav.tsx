@@ -7,6 +7,7 @@ export interface MenuItem {
     className?:string
     onClick?: (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
     route?: string
+    visible?:boolean
 }
 
 export interface MenuNavProps {
@@ -19,8 +20,8 @@ export default function MenuNav({menuItems, className = ""}:Readonly<MenuNavProp
     const router = useRouter()
     
     return <Menubar className={className}>
-        {menuItems.map(({className = "", name, onClick, route}, index)=>
-            <MenubarMenu key={index} >
+        {menuItems.map(({className = "", name, onClick, route, visible = true}, index)=>
+            visible && <MenubarMenu key={index} >
                 <MenubarTrigger
                     className={className}
                     onClick={(e)=>{

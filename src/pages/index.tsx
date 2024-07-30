@@ -1,11 +1,13 @@
-import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
-import { useRouter } from "next/router";
 import ViewWrapper from "@/components/ViewWrapper/ViewWrapper";
 import MenuNav from "@/components/MenuNav/MenuNav";
+import useLoggedUser from "@/hooks/useLoggedUser";
+import { EProfile } from '../types/profile'
 
 
 
 export default function Home() {
+  const user = useLoggedUser()
+
   return (
     <ViewWrapper>
       <div className="w-full flex justify-center">
@@ -16,6 +18,11 @@ export default function Home() {
           },
           {
             name: "Playlists",
+          },
+          {
+            name: "Usuarios",
+            visible: user?.profile?.profileId == EProfile.ADMIN,
+            route: "/users"
           }
         ]} />
       </div>

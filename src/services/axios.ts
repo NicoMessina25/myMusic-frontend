@@ -55,7 +55,8 @@ api.interceptors.response.use((response) => {
       window.location.pathname = "/login"
     }
   }
-  window.location.pathname = "/login"
+  if(error.response.status === 401) 
+    window.location.pathname = "/login"
   return Promise.reject(error);
 });
 

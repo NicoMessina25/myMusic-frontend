@@ -1,3 +1,5 @@
+import { ColorPallette } from "./color"
+
 export enum EAlertType {
     INFO,
     WARNING,
@@ -7,7 +9,7 @@ export enum EAlertType {
   
 interface IAlert {
     message?:string,
-    color?:string
+    color?:keyof ColorPallette
     title:string,
     icon?:string
 }

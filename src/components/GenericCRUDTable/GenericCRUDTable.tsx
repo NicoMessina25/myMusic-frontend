@@ -1,6 +1,6 @@
  
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ColumnProps, DataTable } from '../Table/Table'
 import Spinner from '../Spinner/Spinner';
 import { Indexable } from '@/types/indexable'
@@ -12,10 +12,13 @@ interface GenericCRUDViewProps<TEntity> {
     useFetcher: Fetcher<TEntity>,
     useManager: (props: ControllerProps) => ControllerInterface 
     columns: ColumnProps<TEntity>[],
-    entityIdField: keyof TEntity
+    entityIdField: keyof TEntity,
+    viewWhen?: (row: TEntity) => boolean
+    deleteWhen?: (row: TEntity) => boolean
+    editWhen?: (row: TEntity) => boolean
 }
 
-export default function GenericCRUDTable<TEntity extends Indexable>({useFetcher, useManager, columns, entityIdField}:Readonly<GenericCRUDViewProps<TEntity>>) {
+export default function GenericCRUDTable<TEntity extends Indexable>({useFetcher, useManager, columns, entityIdField, viewWhen, editWhen, deleteWhen}:Readonly<GenericCRUDViewProps<TEntity>>) {
     const router:NextRouter = useRouter()
     const {data, loading, refetch} = useFetcher();
     const { delete: {deleteEntity} } = useManager({onDelete: ()=>{
@@ -29,8 +32,17 @@ export default function GenericCRUDTable<TEntity extends Indexable>({useFetcher,
       return
       
     return (
-        <DataTable columns={columns} data={data ?? []} onEdit={(c)=>{
-          router.push(`${router.pathname}/form/${c[entityIdField]}`)
-        }} onDelete={deleteEntity} onAdd={() => router.push(`${router.pathname}/form`)} />
+        <DataTable 
+          columns={columns} 
+          data={data ?? []} 
+          onEdit={(c)=>{
+            router.push(`${router.pathname}/form/${c[entityIdField]}`)
+          }} 
+          onDelete={deleteEntity} 
+          onAdd={() => router.push(`${router.pathname}/form`)} 
+          deleteWhen={deleteWhen}
+          editWhen={editWhen}
+          viewWhen={viewWhen}
+        />
     )
 }

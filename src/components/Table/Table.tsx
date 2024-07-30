@@ -39,8 +39,11 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
   onAdd?: () => void
   onEdit?: (item:TData)=> void
-  onDelete?: (item:TData) => void,
+  editWhen?: (item: TData) => boolean
+  onDelete?: (item:TData) => void,  
+  deleteWhen?: (item: TData) => boolean
   onView?:(item:TData) => void,
+  viewWhen?: (item: TData) => boolean
   className?: string
   style?: CSSProperties
 }
@@ -55,8 +58,11 @@ export function DataTable<TData, TValue>({
   data,
   onAdd,
   onDelete,
+  deleteWhen = () => true,
   onEdit,
+  editWhen = () => true,
   onView,
+  viewWhen = () => true,
   className = "",
   style
 }: Readonly<DataTableProps<TData, TValue>>) {
@@ -127,9 +133,9 @@ export function DataTable<TData, TValue>({
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
-                {onView && <TableCell><Icon icon={'uil:eye'} onClick={()=> onView(row.original)} className='w-7 h-7 p-1 rounded transition-all hover:text-blue-300 hover:bg-blue-50/10 cursor-pointer' /></TableCell>}
-                {onEdit && <TableCell><Icon icon={'material-symbols:edit'} onClick={()=> onEdit(row.original)} className='w-7 h-7 p-1 rounded transition-all hover:text-blue-300 hover:bg-blue-50/10 cursor-pointer' /></TableCell>}
-                {onDelete && <TableCell><Icon icon={'mdi:trash'} onClick={()=> onDelete(row.original)} className='w-7 h-7 p-1 rounded transition-all hover:text-blue-300 hover:bg-blue-50/10 cursor-pointer' /></TableCell>}
+                {onView && viewWhen(row.original) && <TableCell><Icon icon={'uil:eye'} onClick={()=> onView(row.original)} className='w-7 h-7 p-1 rounded transition-all hover:text-blue-300 hover:bg-blue-50/10 cursor-pointer' /></TableCell>}
+                {onEdit && editWhen(row.original) && <TableCell><Icon icon={'material-symbols:edit'} onClick={()=> onEdit(row.original)} className='w-7 h-7 p-1 rounded transition-all hover:text-blue-300 hover:bg-blue-50/10 cursor-pointer' /></TableCell>}
+                {onDelete && deleteWhen(row.original) && <TableCell><Icon icon={'mdi:trash'} onClick={()=> onDelete(row.original)} className='w-7 h-7 p-1 rounded transition-all hover:text-blue-300 hover:bg-blue-50/10 cursor-pointer' /></TableCell>}
               </TableRow>
             ))
           ) : (

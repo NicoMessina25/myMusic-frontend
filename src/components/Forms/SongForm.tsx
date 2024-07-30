@@ -144,6 +144,7 @@ export default function SongForm({onSubmit, onCancel, initialValue}:Readonly<For
                                 placeholder='Agrega artista existente' 
                                 value={newArtist} 
                                 useFetcher={useArtists}
+                                addToListCombobox
                                 onInputChange={(value:string) => {
                                     setNewArtist({...newArtist, name: value})
                                 }}  
