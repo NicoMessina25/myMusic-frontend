@@ -17,7 +17,8 @@ export default function Home() {
             route: "/songs"
           },
           {
-            name: "Playlists",
+            name: "Playlist",
+            route: "/playlist",
           },
           {
             name: "Usuarios",

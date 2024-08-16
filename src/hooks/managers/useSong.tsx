@@ -16,7 +16,7 @@ export default function useSong({onSave, onUpdate, onDelete}:ControllerProps): C
     }
 
     function deleteEntity(s:Song){
-        request(() => deleteSong(s.songId!), deleteResult, setDeleteResult, onDelete) //songId no va a ser null o undefined
+        request(() => deleteSong(s.songId!), deleteResult, setDeleteResult, onDelete)
     }
 
     function updateEntity(s:Song, id:number){

@@ -1,5 +1,3 @@
- 
-
 import React, { useEffect, useState } from 'react'
 import { useForm, Controller, ControllerRenderProps } from 'react-hook-form';
 import { FormProps, requiredMessage } from '@/types/form';
@@ -14,15 +12,12 @@ import { Label } from '../Labels/Label/Label';
 import KeyValueLabel from '../Labels/KeyValueLabel/KeyValueLabel';
 import { Button } from '../ui/button';
 import { Icon } from '@iconify/react/dist/iconify.js';
-import { Combobox } from '../Combobox/Combobox';
 import useArtists from '@/hooks/fetchers/useArtists';
 import { getDate } from '@/services/utils';
 import useNotification from '@/hooks/useNotification';
 import { DynamicCombobox } from '../DynamicCombobox/DynamicCombobox';
 
 export default function SongForm({onSubmit, onCancel, initialValue}:Readonly<FormProps<Song>>){
-    
-    
     const { handleSubmit, control, formState: {errors}} = useForm<Song>({defaultValues: initialValue ?? defaultSong})
     const [newArtist, setNewArtist] = useState<Artist>(defaultArtist)
     const {notifyError} = useNotification()
