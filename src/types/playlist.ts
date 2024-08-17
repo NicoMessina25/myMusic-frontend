@@ -9,7 +9,7 @@ export interface Playlist {
     created_at:Date | null
     updated_at:Date | null
     songs: Song[];
-    user: User;
+    user?: User;
 }
 
 export const defaultPlaylist: Playlist = {
@@ -20,5 +20,4 @@ export const defaultPlaylist: Playlist = {
     created_at: null,
     updated_at: null,
     songs: [],
-    user: {} as User,
 };

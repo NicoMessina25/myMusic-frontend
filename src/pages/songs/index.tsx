@@ -39,6 +39,7 @@ export default function Songs() {
         }]} useManager={useSong} entityIdField='songId'  
             deleteWhen={() => !!(user?.profile?.profileId && [EProfile.ADMIN, EProfile.ADMINISTRATIVE].includes(user?.profile?.profileId))}
             editWhen={() => !!(user?.profile?.profileId && [EProfile.ADMIN, EProfile.ADMINISTRATIVE].includes(user?.profile?.profileId))}
+            viewWhen={()=>false}
         />
       </div>
     </GenericLayout>

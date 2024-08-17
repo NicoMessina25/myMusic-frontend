@@ -3,20 +3,16 @@ import {Autocomplete, AutocompleteItem, MenuTriggerAction} from "@nextui-org/rea
 import { Indexable } from "@/types/indexable";
 import { Fetcher } from "@/types/fetcher";
 import { Combobox, CommonComboboxProps } from "../Combobox/Combobox";
+import useSearcher from "@/hooks/useSearcher";
 
 interface DynamicComboboxProps<TItem extends Indexable> extends CommonComboboxProps<TItem>{
   useFetcher:Fetcher<TItem>
 }
 
 export function DynamicCombobox<TItem extends Indexable>({useFetcher, ...props}:Readonly<DynamicComboboxProps<TItem>>) {
-  let filterTimeout: any = useRef(null)
   const {data: items, loading, refetch} = useFetcher()
   const [filter, setFilter] = useState<string>("");
-
-  useEffect(() => {
-    filterTimeout.current = setTimeout(() => { refetch({filter}) }, 500)
-    return () => filterTimeout.current && clearTimeout(filterTimeout.current)
-  }, [filter])
+  useSearcher({fetch: refetch, filterValue: filter})
 
   if(!(items instanceof Array)) return
 

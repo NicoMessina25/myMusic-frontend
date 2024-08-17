@@ -11,4 +11,4 @@ export type FetchProps = {
 
 export type FetcherResult<TEntity> = {data: TEntity[] | TEntity | undefined, loading: boolean, error: TError, refetch: (props?:FetchProps)=>void}
 
-export type Fetcher<TEntity> = (entityId?:number)=>FetcherResult<TEntity>
+export type Fetcher<TEntity> = (entityId?:number, initialProps?:FetchProps)=>FetcherResult<TEntity>

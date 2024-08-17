@@ -1,0 +1,7 @@
+.songCard {
+    &:hover{
+        .deleteButtonContainer{
+            opacity: 100;
+        }
+    }
+}

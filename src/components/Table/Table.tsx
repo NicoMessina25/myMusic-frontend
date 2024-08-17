@@ -13,7 +13,7 @@ import {
 
 
 import { Input } from "../ui/input";
-import { CSSProperties, useState } from 'react';
+import { CSSProperties, forwardRef, Ref, useEffect, useImperativeHandle, useState } from 'react';
 import { Button } from "../ui/button"
 
 import {
@@ -34,7 +34,7 @@ export interface ColumnProps<TData> {
   style?: React.CSSProperties
 }
 
-interface DataTableProps<TData, TValue> {
+export interface DataTableProps<TData> {
   columns: ColumnProps<TData>[]
   data: TData[]
   onAdd?: () => void
@@ -44,35 +44,29 @@ interface DataTableProps<TData, TValue> {
   deleteWhen?: (item: TData) => boolean
   onView?:(item:TData) => void,
   viewWhen?: (item: TData) => boolean
+  onGlobalFilter?:(globalFilter:string) => void
+  onFilter?: (columns:ColumnFiltersState) => void
   className?: string
+  pagination?:boolean
   style?: CSSProperties
 }
 
 export interface Cell<TData,TValue = unknown> extends CellContext<TData,TValue> {
 }
 
+export type DataTableRef = {
+  isNextPage: () => boolean
+};
 
-
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-  onAdd,
-  onDelete,
-  deleteWhen = () => true,
-  onEdit,
-  editWhen = () => true,
-  onView,
-  viewWhen = () => true,
-  className = "",
-  style
-}: Readonly<DataTableProps<TData, TValue>>) {
+function DataTableInner<TData>({ columns, data, onAdd, onDelete, deleteWhen = () => true, onEdit, editWhen = () => true, onView, viewWhen = () => true, className = "", style, pagination, onFilter, onGlobalFilter }:DataTableProps<TData>, ref:Ref<DataTableRef>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
   )
+  const [globalFilterValue, setGlobalFilterValue] = useState("")
 
   const table = useReactTable({
     data,
-    columns: columns.map(({accessorKey, header, body = r => r[accessorKey]}):ColumnDef<TData,TValue>=>{
+    columns: columns.map(({accessorKey, header, body = r => r[accessorKey]}):ColumnDef<TData>=>{
       return {accessorKey, header, cell: ({row}) => body?.(row.original)}
     }),
     getCoreRowModel: getCoreRowModel(),
@@ -84,15 +78,30 @@ export function DataTable<TData, TValue>({
     }
   })
 
-  
+  useEffect(()=>{
+    onFilter?.(table.getState().columnFilters)
+  },[JSON.stringify(table.getState().columnFilters)])
+
+  useImperativeHandle(ref, () => ({
+    isNextPage: table.getCanNextPage
+  }));
 
   return (
     <div className={`rounded-md border ${className}`} style={style}>
-      {columns.some(c => c.filter) && <div className="flex items-center py-4">
+      {(columns.some(c => c.filter) || onGlobalFilter) && <div className="flex items-center py-4">
+        {onGlobalFilter && <Input
+          placeholder="Buscar"
+          value={globalFilterValue}
+          className="mx-4"
+          onChange={e=>{
+            onGlobalFilter(e.target.value)
+            setGlobalFilterValue(e.target.value)
+          }}
+        />}
         {columns.map((column)=>
           column.filter ? <Input
             key={column.accessorKey.toString()}
-            placeholder={`Filter ${column.header}s...`}
+            placeholder={`${column.header}`}
             value={(table.getColumn(column.accessorKey.toString())?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
               table.getColumn(column.accessorKey.toString())?.setFilterValue(event.target.value)
@@ -147,14 +156,14 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-end space-x-2 mx-2 py-4">
+      {pagination && <div className="flex items-center justify-end space-x-2 mx-2 py-4">
         <Button
           variant="outline"
           size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
-          Previous
+          Anterior
         </Button>
         <Button
           variant="outline"
@@ -162,9 +171,13 @@ export function DataTable<TData, TValue>({
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          Next
+          Siguiente
         </Button>
-      </div>
+      </div>}
     </div>
   )
-}
+};
+
+export const DataTable = forwardRef(DataTableInner) as <TData>(
+  props:DataTableProps<TData> & {ref?: React.ForwardedRef<DataTableRef>}
+) => ReturnType<typeof DataTableInner>

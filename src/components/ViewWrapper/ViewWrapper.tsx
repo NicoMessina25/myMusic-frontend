@@ -18,7 +18,7 @@ export default function ViewWrapper({children}:Readonly<ViewWrapperProps>) {
 
   return <div className={`flex w-full justify-between min-h-screen p-4 ${inter.className}`}>
     {children}
-    <div className='flex flex-col items-end'>
+    <div className='flex flex-col items-end absolute right-4'>
       <p className='text-xs text-slate-500'>{"v"+packageJSON.version}</p>
       <Button variant={'outline'} className='text-xs' onClick={()=> {
         logout().then(data=>{

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useForm, Controller, ControllerRenderProps } from 'react-hook-form';
 import { FormProps, requiredMessage } from '@/types/form';
 import { Song, defaultSong } from '@/types/song';
@@ -16,11 +16,18 @@ import useArtists from '@/hooks/fetchers/useArtists';
 import { getDate } from '@/services/utils';
 import useNotification from '@/hooks/useNotification';
 import { DynamicCombobox } from '../DynamicCombobox/DynamicCombobox';
+import useSongs from '@/hooks/fetchers/useSongs';
+import useSearcher from '@/hooks/useSearcher';
 
 export default function SongForm({onSubmit, onCancel, initialValue}:Readonly<FormProps<Song>>){
-    const { handleSubmit, control, formState: {errors}} = useForm<Song>({defaultValues: initialValue ?? defaultSong})
+    
+    const { handleSubmit, control, watch, formState: {errors}} = useForm<Song>({defaultValues: initialValue ?? defaultSong})
     const [newArtist, setNewArtist] = useState<Artist>(defaultArtist)
     const {notifyError} = useNotification()
+    const {data: songs, refetch} = useSongs(undefined, {filter: watch('title'), limit:5})
+    useSearcher({fetch: refetch, filterValue: watch('title'), limit: 5})
+
+    if(!(songs instanceof Array)) return <></>
 
     function addArtist(field:ControllerRenderProps<Song, "artists">, a:Artist){
         if(field.value.find(artist => artist.name.localeCompare(a.name) === 0))
@@ -52,118 +59,125 @@ export default function SongForm({onSubmit, onCancel, initialValue}:Readonly<For
     
 
     return <div className='flex flex-col items-center mt-6'>
-        <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col w-full' >
-            
-            <div className='flex flex-wrap justify-between items-center'>
-                <Controller
-                    name="title"
-                    control={control}
-                    rules={{ required: requiredMessage}}
-                    render={({ field }) => 
-                        <TextInput 
-                            label='Título'
-                            className={inputsWidth}
-                            {...field} 
-                            required
-                            error={errors.title?.message} 
-                        />
-                    }
-                />
+        <div className='flex gap-3'>
+            <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col w-full' >
+                <div className='flex flex-wrap justify-between items-center'>
+                    <Controller
+                        name="title"
+                        control={control}
+                        rules={{ required: requiredMessage}}
+                        render={({ field }) => 
+                            <TextInput 
+                                label='Título'
+                                className={inputsWidth}
+                                {...field} 
+                                required
+                                error={errors.title?.message} 
+                            />
+                        }
+                    />
+                    
 
-                <Controller
-                    name="length"
-                    control={control}
-                    rules={{
-                        required: requiredMessage,
-                        min: {
-                            value: 0,
-                            message: "La canción debe durar al menos un segundo"
-                        } 
-                    }}
-                    render={({ field }) => 
-                        <TimeInput
-                            label={'Duración (HH:mm:ss)'}
-                            className={inputsWidth}
-                            {...field}
-                            error={errors.length?.message} 
-                        />
-                    }
-                />
+                    <Controller
+                        name="length"
+                        control={control}
+                        rules={{
+                            required: requiredMessage,
+                            min: {
+                                value: 0,
+                                message: "La canción debe durar al menos un segundo"
+                            } 
+                        }}
+                        render={({ field }) => 
+                            <TimeInput
+                                label={'Duración (HH:mm:ss)'}
+                                className={inputsWidth}
+                                {...field}
+                                error={errors.length?.message} 
+                            />
+                        }
+                    />
 
-                <Controller
-                    name="releaseDate"
-                    control={control}
-                    rules={{
-                        validate: value => !value || getDate(value)! <= new Date() || "La fecha no puede ser posterior a hoy"
-                    }}
-                    render={({ field }) => 
-                        <DateInput 
-                            label='Lanzamiento'
-                            className={inputsWidth}
-                            {...field}
-                            maxDate={new Date()}
-                            value={field.value ?? undefined} 
-                            error={errors.releaseDate?.message}
-                        />
-                    }
-                />
-            
-            <Controller
-                name='artists'
-                control={control}
-                rules={{
-                    validate: value => value.length > 0 || 'La canción debe tener al menos un artista'
-                }}
-                render={({field})=>
-                    <div className='my-3 w-full p-4 justify-center rounded bg-slate-900'>
-                        {field.value && field.value.length > 0 && <Label className='my-1 text-lg' text='Artistas' />}
-                        <div className='flex flex-wrap gap-3'>
-                            {field.value?.map((artist,index)=>{
-                                
-                                return artistTemplate(artist,index,()=>{
-                                    field.value?.splice(field.value.indexOf(artist),1)
-                                    field.onChange(field.value)
-                                    setNewArtist(defaultArtist)
-                                }, errors.artists?.[index]?.name?.message)
-                            })}
-                        </div>
-                        
-
+                    <Controller
+                        name="releaseDate"
+                        control={control}
+                        rules={{
+                            validate: value => !value || getDate(value)! <= new Date() || "La fecha no puede ser posterior a hoy"
+                        }}
+                        render={({ field }) => 
+                            <DateInput 
+                                label='Lanzamiento'
+                                className={inputsWidth}
+                                {...field}
+                                maxDate={new Date()}
+                                value={field.value ?? undefined} 
+                                error={errors.releaseDate?.message}
+                            />
+                        }
+                    />
                 
-                        <div className='flex gap-3'>
-                            {<DynamicCombobox 
-                                ariaLabel='Nombre' 
-                                optionLabel={"name"}
-                                error={errors.artists?.message} 
-                                keyField={"artistId"}
-                                placeholder='Agrega artista existente' 
-                                value={newArtist} 
-                                useFetcher={useArtists}
-                                addToListCombobox
-                                onInputChange={(value:string) => {
-                                    setNewArtist({...newArtist, name: value})
-                                }}  
-                                onChange={(a)=>{
-                                   a && addArtist(field,a)
-                                }} 
-                                notFoundText='No se encontraron artistas' 
-                                allowsCustomValue 
-                                addCustomValueButtonLabel='Agregar nuevo artista' 
-                                onAddCustomValue={(value)=>
-                                    addArtist(field, {artistId: -1, name: value})}
-                            />}         
-                        </div>                       
-                    </div>
-                }
-            />
-            
-            </div>
+                    <Controller
+                        name='artists'
+                        control={control}
+                        rules={{
+                            validate: value => value.length > 0 || 'La canción debe tener al menos un artista'
+                        }}
+                        render={({field})=>
+                            <div className='my-3 w-full p-4 justify-center rounded bg-slate-900'>
+                                {field.value && field.value.length > 0 && <Label className='my-1 text-lg' text='Artistas' />}
+                                <div className='flex flex-wrap gap-3'>
+                                    {field.value?.map((artist,index)=>{
+                                        
+                                        return artistTemplate(artist,index,()=>{
+                                            field.value?.splice(field.value.indexOf(artist),1)
+                                            field.onChange(field.value)
+                                            setNewArtist(defaultArtist)
+                                        }, errors.artists?.[index]?.name?.message)
+                                    })}
+                                </div>
+                                
 
-            <div className='flex justify-end mt-3'>
-                <BackButton text='Cancelar' onClick={onCancel} />
-                <SubmitButton text='Guardar' className='mx-1' /> 
+                        
+                                <div className='flex gap-3'>
+                                    {<DynamicCombobox 
+                                        ariaLabel='Nombre' 
+                                        optionLabel={"name"}
+                                        error={errors.artists?.message} 
+                                        keyField={"artistId"}
+                                        placeholder='Agrega artista existente' 
+                                        value={newArtist} 
+                                        useFetcher={useArtists}
+                                        addToListCombobox
+                                        onInputChange={(value:string) => {
+                                            setNewArtist({...newArtist, name: value})
+                                        }}  
+                                        onChange={(a)=>{
+                                        a && addArtist(field,a)
+                                        }} 
+                                        notFoundText='No se encontraron artistas' 
+                                        allowsCustomValue 
+                                        addCustomValueButtonLabel='Agregar nuevo artista' 
+                                        onAddCustomValue={(value)=>
+                                            addArtist(field, {artistId: -1, name: value})}
+                                    />}         
+                                </div>                       
+                            </div>
+                        }
+                    />
+                
+                </div>
+
+                <div className='flex justify-end mt-3'>
+                    <BackButton text='Cancelar' onClick={onCancel} />
+                    <SubmitButton text='Guardar' className='mx-1' /> 
+                </div>
+            </form>
+            <div className='flex flex-col bg-gray-900 p-3 gap-1 rounded'>
+                <p className='font-bold mb-3'>Canciones existentes</p>
+                {songs.map(s => <p className='text-sm pb-1 border-b-1 text-blue-200 font-semibold' key={s.songId}>{s.title} - <span className='text-xs italic font-normal'>{s.artists.map(a => a.name).join(',')}</span></p>)}
             </div>
-        </form>
+        </div>
+        
         
     </div>
 }

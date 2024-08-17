@@ -6,9 +6,9 @@ import useLoggedUser from '@/hooks/useLoggedUser';
 import { EProfile } from '@/types/profile';
 import { Playlist } from '@/types/playlist';
 import React from 'react';
+import { formatDate } from '@/services/utils';
 
 export default function Playlists() {
-  const user = useLoggedUser();
 
   return (
     <GenericLayout title='Playlists'>
@@ -18,15 +18,10 @@ export default function Playlists() {
           columns={[
             { accessorKey: "name", header: "Nombre" },
             { accessorKey: "description", header: "Descripción" },
+            { accessorKey: "created_at", header: "Creada", body: (row:Playlist) => formatDate(row.created_at, "dd/MM/yyyy - HH:mm")}
           ]}
           useManager={usePlaylist}
           entityIdField='playlistId'
-          deleteWhen={() =>
-            !!(user?.profile?.profileId && [EProfile.ADMIN, EProfile.ADMINISTRATIVE].includes(user?.profile?.profileId))
-          }
-          editWhen={() =>
-            !!(user?.profile?.profileId && [EProfile.ADMIN, EProfile.ADMINISTRATIVE].includes(user?.profile?.profileId))
-          }
         />
       </div>
     </GenericLayout>

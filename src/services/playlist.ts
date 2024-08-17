@@ -1,10 +1,9 @@
 import { CustomResponse } from "@/types/serverResponse";
 import { Playlist } from "@/types/playlist";
 import api from "./axios";
-import { toISOString } from "./utils";
 
 export function savePlaylist(playlist: Playlist): Promise<CustomResponse> {
-    return api.post("/api/playlists/",{...playlist, created_at: toISOString(playlist.created_at)}).then(res => res.data);
+    return api.post("/api/playlists/",{...playlist}).then(res => res.data);
 }
 
 export function getPlaylists(): Promise<CustomResponse<Playlist[]>> {
@@ -16,9 +15,23 @@ export function getPlaylistById(playlistId: number): Promise<CustomResponse<Play
 }
 
 export function updatePlaylist(playlist: Playlist): Promise<CustomResponse> {
-    return api.put("/api/playlists/",{...playlist, updated_at: toISOString(playlist.updated_at)}).then(res => res.data);
+    return api.put("/api/playlists/",{...playlist}).then(res => res.data);
 }
 
 export function deletePlaylist(playlistId: number): Promise<CustomResponse> {
     return api.delete("/api/playlists/" + playlistId).then(res => res.data);
+}
+
+export function addSong(playlistId: number, songId:number):Promise<CustomResponse>{
+    return api.post("/api/playlist/addSong/",{
+        playlistId,
+        songId
+    }).then(res => res.data)
+}
+
+export function deleteSong(playlistId: number, songId:number):Promise<CustomResponse>{
+    return api.post("/api/playlist/deleteSong/",{
+        playlistId,
+        songId
+    }).then(res => res.data)
 }

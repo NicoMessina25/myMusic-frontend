@@ -1,11 +1,11 @@
 import { getSongById, getSongs } from '@/services/songs';
-import { FetcherResult } from '@/types/fetcher';
+import { FetcherResult, FetchProps } from '@/types/fetcher';
 import { Song } from '@/types/song';
 import { useEffect, useState } from 'react';
 
 
 
-export default function useSongs(entityId?:number):FetcherResult<Song> {
+export default function useSongs(entityId?:number, initialProps?:FetchProps):FetcherResult<Song> {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
@@ -13,11 +13,11 @@ export default function useSongs(entityId?:number):FetcherResult<Song> {
 
     useEffect(()=>{
         setLoading(true)
-        fetch()
+        fetch(initialProps)
     },[])
 
-    function fetch(){
-        (entityId ? getSongById(entityId) : getSongs()).then(res=>{
+    function fetch(props?:FetchProps){
+        (entityId ? getSongById(entityId) : getSongs(props)).then(res=>{
             if(res.success)
                 setData(res.data)
             else {
