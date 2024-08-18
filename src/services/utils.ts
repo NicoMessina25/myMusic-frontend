@@ -21,9 +21,15 @@ export function getDate(date?: string | number | Date | null): Date | null {
     return typeof date === "string" && !date.includes("T") ? new Date(date + "T00:00:00.000") : new Date(date)
 }
 
-export function formatDate(date: Date | null, formatStr: string, options?: FormatDateOptions): string{ 
+export function formatDate(date: Date | null, formatStr: string, timeZoned?:boolean): string{ 
     if(!date) return ""
-    return format(date, formatStr, options)
+    date = new Date(date)
+    return format(timeZoned ? getDateTimeZoned(date):date, formatStr)
+}
+
+function getDateTimeZoned(date:Date){
+    const timezoneOffset = new Date().getTimezoneOffset();
+    return new Date(date.getTime() - timezoneOffset * 60 * 1000);
 }
 
 export const getSecondsFromHHMMSS = (value:string) => {
