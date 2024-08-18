@@ -35,7 +35,7 @@ export default function PlaylistView() {
             </div>
             <div className='flex gap-4'>
                 <div className='flex flex-wrap mt-4 h-fit gap-3 w-full'>
-                    {playlist?.songs.map(s => <div key={s.songId} className={`bg-blue-800 max-w-[250px] min-w-[250px] p-3 rounded relative flex ${style.songCard}`} >
+                    {playlist?.songs.toSorted((s1,s2) => s1.title.localeCompare(s2.title)).map(s => <div key={s.songId} className={`bg-blue-800 max-w-[250px] min-w-[250px] p-3 rounded relative flex ${style.songCard}`} >
                         <div className='flex flex-col'>
                             <p className='font-bold text-2xl'>{s.title}</p>
                             <p className='text-slate-200 text-sm'>{s.artists.map(a => a.name).join(' | ')}</p>
