@@ -1,1 +1,1 @@
-export const APIURL = "http://127.0.0.1:5000"//"https://my-music-backend.vercel.app"// "https://mymusic-backend.up.railway.app" //
+export const APIURL = "https://my-music-backend.vercel.app"//"http://127.0.0.1:5000"// "https://mymusic-backend.up.railway.app" //
