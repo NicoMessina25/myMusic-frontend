@@ -18,7 +18,7 @@ export default function Playlists() {
           columns={[
             { accessorKey: "name", header: "Nombre" },
             { accessorKey: "description", header: "Descripción" },
-            { accessorKey: "created_at", header: "Creada", body: (row:Playlist) => formatDate(row.created_at, "dd/MM/yyyy - HH:mm")}
+            { accessorKey: "created_at", header: "Creada", body: (row:Playlist) => formatDate(row.created_at, "dd/MM/yyyy - HH:mm", true)}
           ]}
           useManager={usePlaylist}
           entityIdField='playlistId'
