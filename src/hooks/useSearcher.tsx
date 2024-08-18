@@ -1,5 +1,5 @@
 import { FetchProps } from '@/types/fetcher';
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 interface SearcherProps {
     fetch: (props?:FetchProps) => void
@@ -11,9 +11,14 @@ interface SearcherProps {
 export default function useSearcher({fetch, filterValue, limit, timeout=500}:SearcherProps) {
 
     const filterTimeout:any = useRef(null);
+    const [firstLoad, setFirstLoad] = useState(true)
 
     useEffect(() => {
-        filterTimeout.current = setTimeout(() => { fetch({filter: filterValue, limit}) }, timeout)
+        if(!firstLoad)
+            filterTimeout.current = setTimeout(() => { fetch({filter: filterValue, limit}) }, timeout)
+        else setFirstLoad(false)
+
+
         return () => filterTimeout.current && clearTimeout(filterTimeout.current)
     }, [filterValue])
 
