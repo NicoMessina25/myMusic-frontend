@@ -12,11 +12,11 @@ export default function useProfiles():FetcherResult<Profile> {
     const [data, setData] = useState<Profile[]>([])
 
     useEffect(()=>{
-        setLoading(true)
         fetch()
     },[])
 
-    function fetch(){
+    function fetch(){        
+        setLoading(true)
         getProfiles().then(res=>{
             if(res.success)
                 setData(res.data)

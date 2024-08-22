@@ -12,11 +12,11 @@ export default function usePlaylists(entityId?: number): FetcherResult<Playlist>
     const [data, setData] = useState<Playlist | Playlist[]>([]);
 
     useEffect(() => {
-        setLoading(true);
         fetch();
     }, []);
 
     function fetch() {
+        setLoading(true);
         (entityId ? getPlaylistById(entityId) : getPlaylists()).then(res => {
             if (res.success) {
                 setData(res.data);

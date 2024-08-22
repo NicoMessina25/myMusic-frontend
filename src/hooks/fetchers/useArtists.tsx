@@ -10,11 +10,11 @@ export default function useArtists(entityId?:number):FetcherResult<Artist> {
     const [data, setData] = useState<Artist | Artist[]>()
 
     useEffect(()=>{
-        setLoading(true)
         fetch()
     },[])
 
     function fetch(props?:FetchProps){
+        setLoading(true);
         (entityId ? getArtistById(entityId) : getArtists(props)).then(res=>{
             if(res.success)
                 setData(res.data)
