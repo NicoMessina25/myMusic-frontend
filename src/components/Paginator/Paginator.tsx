@@ -17,8 +17,7 @@ interface PaginatorProps<TEntity> {
 export default function Paginator<TEntity>({pageSize=50,searchPlaceholder="", useFetcher,bodyCell,className="",contentClassName=""}:Readonly<PaginatorProps<TEntity>>) {
     const [page, setPage] = useState(0)
     const [search, setSearch] = useState("")
-    const [data, setData] = useState<TEntity[]>([]);
-    const {data:nextData, refetch, loading} = useFetcher();
+    const {data, refetch, loading} = useFetcher();
     const [isMoreData, setIsMoreData] = useState(false)
 
     useSearcher({fetch:refetch, limit:pageSize, filterValue: search, onSearch: () => {
@@ -26,9 +25,8 @@ export default function Paginator<TEntity>({pageSize=50,searchPlaceholder="", us
     }})
 
     useEffect(()=>{
-        if(!loading && nextData instanceof Array){
-            setIsMoreData(nextData.length == pageSize)
-            nextData.length > 0 && setData(nextData)
+        if(!loading && data instanceof Array){
+            setIsMoreData(data.length == pageSize)
         }
     },[loading])
 
@@ -49,7 +47,7 @@ export default function Paginator<TEntity>({pageSize=50,searchPlaceholder="", us
             }}>Siguiente</Button>
         </div>
         <div className={`flex flex-wrap gap-3 ${contentClassName}`}>
-            {data.map(bodyCell)}
+            {data.length ? data.map(bodyCell):"No hay datos para mostrar"}
         </div></React.Fragment>:
         <div className='w-full'><Spinner/></div> 
         }
