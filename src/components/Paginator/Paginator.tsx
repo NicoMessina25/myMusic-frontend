@@ -32,16 +32,13 @@ export default function Paginator<TEntity>({pageSize=50,searchPlaceholder="", us
         }
     },[loading])
 
-
-    if(loading) return <div className='w-full'><Spinner/></div> 
-
     if(!(data instanceof Array)) return
 
     return <div className={`flex flex-col gap-3 ${className}`}>
         {searchPlaceholder && <TextInput className='w-full' value={search} onChange={e => {
             setSearch(e.target.value)
         }} placeholder={searchPlaceholder} />}
-        <div className='flex justify-between'>
+        {!loading ? <React.Fragment> <div className='flex justify-between'>
             <Button variant={"outline"} disabled={page == 0} onClick={()=>{
                 setPage(page-1)                
                 refetch({offSet:pageSize*(page-1), limit:pageSize, filter:search})
@@ -53,6 +50,8 @@ export default function Paginator<TEntity>({pageSize=50,searchPlaceholder="", us
         </div>
         <div className={`flex flex-wrap gap-3 ${contentClassName}`}>
             {data.map(bodyCell)}
-        </div>
+        </div></React.Fragment>:
+        <div className='w-full'><Spinner/></div> 
+        }
     </div>
 }
