@@ -8,7 +8,7 @@ export interface Playlist {
     userId : number;
     created_at:Date | null
     updated_at:Date | null
-    songs: Song[];
+    songs?: Song[];
     user?: User;
 }
 
@@ -19,5 +19,4 @@ export const defaultPlaylist: Playlist = {
     userId: -1,
     created_at: null,
     updated_at: null,
-    songs: [],
 };
