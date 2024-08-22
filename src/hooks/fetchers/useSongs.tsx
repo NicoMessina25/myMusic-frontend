@@ -12,11 +12,11 @@ export default function useSongs(entityId?:number, initialProps?:FetchProps):Fet
     const [data, setData] = useState<Song | Song[]>([])
 
     useEffect(()=>{
-        setLoading(true)
         fetch(initialProps)
     },[])
 
     function fetch(props?:FetchProps){
+        setLoading(true);
         (entityId ? getSongById(entityId) : getSongs(props)).then(res=>{
             if(res.success)
                 setData(res.data)

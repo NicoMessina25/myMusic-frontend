@@ -12,11 +12,11 @@ export default function useUsers(entityId?:number):FetcherResult<User> {
     const [data, setData] = useState<User | User[]>([])
 
     useEffect(()=>{
-        setLoading(true)
         fetch()
     },[])
 
     function fetch(){
+        setLoading(true);
         (entityId ? getUserById(entityId) : getUsers()).then(res=>{
             if(res.success)
                 setData(res.data)

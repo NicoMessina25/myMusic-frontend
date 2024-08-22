@@ -10,7 +10,6 @@ export default function usePlaylistSongs(playlistId:number, initialProps?:FetchP
 
     useEffect(()=>{
         if(!Number.isNaN(playlistId)){
-            setSongsState({...songsState, loading:true})
             fetch(initialProps)
             fetchSongsToAdd({
                 limit:15
@@ -19,6 +18,7 @@ export default function usePlaylistSongs(playlistId:number, initialProps?:FetchP
     },[playlistId])
 
     function fetch(props?:FetchProps){
+        setSongsState({...songsState, loading:true})
         getPlaylistSongs(playlistId, props).then(res=>{
             if(res.success)
                 setSongsState({...songsState, data: res.data, loading:false})

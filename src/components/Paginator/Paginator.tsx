@@ -26,11 +26,14 @@ export default function Paginator<TEntity>({pageSize=50,searchPlaceholder="", us
     }})
 
     useEffect(()=>{
-        if(nextData instanceof Array){
+
+        console.log("s");
+        if(!loading && nextData instanceof Array){
+            
             setIsMoreData(nextData.length == pageSize)
             nextData.length > 0 && setData(nextData)
         }
-    },[nextData instanceof Array ? nextData.length:0])
+    },[loading])
 
 
     if(loading) return <Spinner/>
