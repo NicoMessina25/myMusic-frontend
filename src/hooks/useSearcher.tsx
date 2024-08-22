@@ -6,16 +6,20 @@ interface SearcherProps {
     filterValue:string
     timeout?:number
     limit?:number
+    onSearch?:()=>void
 }
 
-export default function useSearcher({fetch, filterValue, limit, timeout=500}:SearcherProps) {
+export default function useSearcher({fetch, filterValue, limit, timeout=500, onSearch}:SearcherProps) {
 
     const filterTimeout:any = useRef(null);
     const [firstLoad, setFirstLoad] = useState(true)
 
     useEffect(() => {
         if(!firstLoad)
-            filterTimeout.current = setTimeout(() => { fetch({filter: filterValue, limit}) }, timeout)
+            filterTimeout.current = setTimeout(() => { 
+                fetch({filter: filterValue, limit})
+                onSearch?.()
+            }, timeout)
         else setFirstLoad(false)
 
 
