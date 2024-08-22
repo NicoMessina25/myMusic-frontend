@@ -1,7 +1,6 @@
+import Title from "@/components/Labels/Title/Title";
 import ViewWrapper from "@/components/ViewWrapper/ViewWrapper";
-import MenuNav from "@/components/MenuNav/MenuNav";
 import useLoggedUser from "@/hooks/useLoggedUser";
-import { EProfile } from '../types/profile'
 
 
 
@@ -10,22 +9,10 @@ export default function Home() {
 
   return (
     <ViewWrapper>
-      <div className="w-full flex justify-center">
-        <MenuNav menuItems={[
-          {
-            name: "Canciones",
-            route: "/songs"
-          },
-          {
-            name: "Playlist",
-            route: "/playlists",
-          },
-          {
-            name: "Usuarios",
-            visible: user?.profile?.profileId == EProfile.ADMIN,
-            route: "/users"
-          }
-        ]} />
+      <div className="flex-grow flex mt-10 justify-center">   
+        <h1 className="text-6xl font-bold">
+          Bienvenido {user?.username}!
+        </h1>
       </div>
     </ViewWrapper>
   );

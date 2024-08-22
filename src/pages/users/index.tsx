@@ -25,7 +25,7 @@ export default function Users() {
                 return row.profile?.name
             }
         }]} useManager={useUser} entityIdField='userId'
-        
+            viewWhen={() => false}
             deleteWhen={row => user?.userId !== row.userId}
         />
         </div>

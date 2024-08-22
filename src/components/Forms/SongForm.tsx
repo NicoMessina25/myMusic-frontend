@@ -59,7 +59,7 @@ export default function SongForm({onSubmit, onCancel, initialValue}:Readonly<For
     
 
     return <div className='flex flex-col items-center mt-6'>
-        <div className='flex gap-3'>
+        <div className='flex flex-col md:flex-row gap-3'>
             <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col w-full' >
                 <div className='flex flex-wrap justify-between items-center'>
                     <Controller
