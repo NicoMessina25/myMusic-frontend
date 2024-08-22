@@ -21,7 +21,7 @@ export default function PlaylistView() {
     const [searchSong, setSearchSong] = useState("");
     const [showSearcher, setShowSearcher] = useState(false)
     const {notifySuccess, notifyError} = useNotification();
-    const pageSize=7
+    const pageSize=25
     const {playlistSongs, fetchSongs: fetchSongs_, playlistSongsToAdd, fetchSongsToAdd} = usePlaylistSongs(Number(router.query.playlistId),{limit:pageSize})
     
     useSearcher({fetch: fetchSongsToAdd, filterValue: searchSong})
