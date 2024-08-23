@@ -27,16 +27,13 @@ export default function GenericCRUDTable<TEntity extends Indexable>({useFetcher,
     }})
     const [filter, setFilter] = useState("")
     useSearcher({fetch: refetch, filterValue: filter})
-
-
-    if(loading)
-      return <Spinner/>
     
     if(!(data instanceof Array))
       return
       
     return (
         <DataTable
+          loading={loading}
           columns={columns}
           data={data ?? []}
           onEdit={(e)=>{

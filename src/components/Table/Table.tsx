@@ -25,6 +25,7 @@ import {
   TableRow,
 } from "../ui/table"
 import { Icon } from "@iconify/react/dist/iconify.js"
+import Spinner from "../Spinner/Spinner";
 
 export interface ColumnProps<TData> {
   accessorKey: keyof TData,
@@ -49,6 +50,7 @@ export interface DataTableProps<TData> {
   className?: string
   pagination?:boolean
   style?: CSSProperties
+  loading?:boolean
 }
 
 export interface Cell<TData,TValue = unknown> extends CellContext<TData,TValue> {
@@ -58,7 +60,7 @@ export type DataTableRef = {
   isNextPage: () => boolean
 };
 
-function DataTableInner<TData>({ columns, data, onAdd, onDelete, deleteWhen = () => true, onEdit, editWhen = () => true, onView, viewWhen = () => true, className = "", style, pagination, onFilter, onGlobalFilter }:DataTableProps<TData>, ref:Ref<DataTableRef>) {
+function DataTableInner<TData>({ columns, data, onAdd, onDelete, deleteWhen = () => true, onEdit, editWhen = () => true, onView, viewWhen = () => true, className = "", style, pagination, onFilter, onGlobalFilter, loading }:DataTableProps<TData>, ref:Ref<DataTableRef>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
   )
@@ -150,7 +152,7 @@ function DataTableInner<TData>({ columns, data, onAdd, onDelete, deleteWhen = ()
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                Sin datos
+                {loading?  <Spinner/>: "Sin datos"}
               </TableCell>
             </TableRow>
           )}
